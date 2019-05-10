@@ -25,12 +25,14 @@ ros::Publisher pub_frontleft("/zumo/prox_frontleft", &prox_msg);
 ros::Publisher pub_frontright("/zumo/prox_frontright", &prox_msg);
 ros::Publisher pub_right("/zumo/prox_right", &prox_msg);
 
+//Customised ros_handler method. This method maintains the same input as before.
+//Now variable (float) inputs are handled and result in variable speed control.
 void ros_handler( const geometry_msgs::Twist& cmd_msg) 
 {
   float x = cmd_msg.linear.x;
   float y = cmd_msg.linear.y;
   
-  //Type conversion - I don't need to worry about decimal values after multiplacation.
+  //Type conversion - I don't need to worry about decimal values after multiplication.
   // e.g x = 0.4999; x_speed = 49;
   
   int x_speed = static_cast<int>(x * 100);
@@ -53,6 +55,8 @@ void ros_handler( const geometry_msgs::Twist& cmd_msg)
   stop();
 }
 
+
+//This program maintains previous access to the /zumo/cmd_vel topic.
 ros::Subscriber<geometry_msgs::Twist> sub("/zumo/cmd_vel", ros_handler);
 
 Zumo32U4Motors motors;
@@ -107,6 +111,10 @@ void publishSensorData()
   pub_right.publish( &prox_msg);
 }
 
+//The following movement functions have been updated to accept two parameters
+// int speed - is the value to set Motor speed to.
+// int time - is the duration the motor will be set at the specified speed.
+// No testing carried out yet to determine how High speed and High duration combinations will be handled by the robot.
 void forward(int speed, int time)
 { 
   //Serial.print("Moving forward at: "); Serial.print(speed); Serial.print(" for: "); Serial.println(time);
